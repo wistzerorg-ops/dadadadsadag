@@ -1,20 +1,35 @@
-export default async function handler(req, res) {
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+// Isso diz para a Vercel usar a rede de borda (Edge), que tem 0ms de cold start.
+export const config = {
+  runtime: 'edge', 
+};
 
-  if (req.method === 'OPTIONS') return res.status(200).end();
-  if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
+export default async function handler(req) {
+  if (req.method === 'OPTIONS') {
+    return new Response(null, {
+      status: 200,
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'POST, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type',
+      },
+    });
+  }
 
-  const { contents, system_instruction } = req.body;
-  const apiKey = process.env.GEMINI_API_KEY; 
+  if (req.method !== 'POST') {
+    return new Response(JSON.stringify({ error: 'Method not allowed' }), { status: 405 });
+  }
 
-  if (!apiKey) return res.status(500).json({ error: 'Chave ausente.' });
+  const { contents, system_instruction } = await req.json();
+  const apiKey = process.env.GEMINI_API_KEY;
+
+  if (!apiKey) {
+    return new Response(JSON.stringify({ error: 'Chave ausente.' }), { status: 500 });
+  }
 
   try {
-    // O parâmetro alt=sse ativa o streaming no Google
+    // Requisição direta para o Google usando o modelo mais rápido
     const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent?key=${apiKey}&alt=sse`,
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}&alt=sse`,
       {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -23,25 +38,20 @@ export default async function handler(req, res) {
     );
 
     if (!response.ok) {
-      const err = await response.text();
-      return res.status(response.status).send(err);
+      const errorText = await response.text();
+      return new Response(errorText, { status: response.status });
     }
 
-    // Repassa o streaming do Google para o navegador
-    res.setHeader('Content-Type', 'text/event-stream');
-    res.setHeader('Cache-Control', 'no-cache');
-    res.setHeader('Connection', 'keep-alive');
-
-    const reader = response.body.getReader();
-    const decoder = new TextDecoder('utf-8');
-
-    while (true) {
-      const { done, value } = await reader.read();
-      if (done) break;
-      res.write(decoder.decode(value, { stream: true }));
-    }
-    res.end();
+    // Devolve o fluxo de dados (stream) direto para o navegador
+    return new Response(response.body, {
+      headers: {
+        'Content-Type': 'text/event-stream',
+        'Cache-Control': 'no-cache',
+        'Connection': 'keep-alive',
+        'Access-Control-Allow-Origin': '*',
+      },
+    });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    return new Response(JSON.stringify({ error: error.message }), { status: 500 });
   }
 }
