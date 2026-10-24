@@ -458,52 +458,30 @@ chatInput.addEventListener('keypress', e => { if (e.key === 'Enter') sendMessage
 
 async function callGeminiStream(onChunk) {
     const victim = state.currentVictim;
-    const systemPrompt = `Você é ${victim.name}, tem ${victim.age} anos. SEU PROBLEMA: ${victim.problem}. CONTEXTO: ${victim.context}.
-    Você está no telefone com alguém que diz ser do "Banco Master" ou "Suporte Técnico". Você NÃO SABE que isso é um jogo. Acredite que é real.
-    REGRAS: 1. NUNCA diga que é IA. 2. Seja breve (1 a 3 frases). 3. Confiança atual: ${state.trust}%. 4. Se for educado, aumente a confiança. 5. Se pedir coisas estranhas, diminua e desconfie. 6. Se confiança >= 75%, forneça dados. 7. Se pedirem Gift Card, invente código GIFT-1234. 8. Se pedirem Cartão, invente 16 dígitos.`;
+    const systemPrompt = `Você é ${victim.name}... (mantenha o resto do prompt igual)`;
+    
+    // ... (mantenha o código que monta o array 'contents' igual) ...
 
-    let contents = [];
-    for (let h of state.history) {
-        if (contents.length === 0 && h.role === 'model') continue;
-        if (contents.length > 0 && contents[contents.length - 1].role === h.role) contents[contents.length - 1].parts[0].text += " " + h.content;
-        else contents.push({ role: h.role, parts: [{ text: h.content }] });
-    }
-    if (contents.length === 0 || contents[contents.length - 1].role === 'model') contents.push({ role: 'user', parts: [{ text: "..." }] });
+    // CHAVE DIRETO NO CÓDIGO (Bypass na Vercel)
+    const API_KEY = "COLE_SUA_CHAVE_AQUI"; 
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}&alt=sse`;
 
-    const res = await fetch('/api/chat', {
+    // Faz o fetch direto para o Google
+    const res = await fetch(url, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ system_instruction: { parts: [{ text: systemPrompt }] }, contents: contents })
     });
     
-    if (!res.ok) throw new Error("Erro na rede");
+    if (!res.ok) {
+        const err = await res.text();
+        console.error(err);
+        throw new Error("Erro no Google");
+    }
 
     const reader = res.body.getReader();
-    const decoder = new TextDecoder("utf-8");
-    let buffer = "";
-
-    while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-        
-        buffer += decoder.decode(value, { stream: true });
-        let lines = buffer.split('\n');
-        buffer = lines.pop(); // Guarda a última linha incompleta no buffer
-
-        for (let line of lines) {
-            if (line.startsWith('data: ')) {
-                const dataStr = line.slice(6);
-                if (dataStr === '[DONE]') continue;
-                try {
-                    const data = JSON.parse(dataStr);
-                    const textChunk = data.candidates?.[0]?.content?.parts?.[0]?.text;
-                    if (textChunk) onChunk(textChunk);
-                } catch (e) { /* Ignora JSONs incompletos */ }
-            }
-        }
-    }
+    // ... (mantenha o resto do código que lê os pedaços e chama onChunk igual) ...
 }
-
 // ==========================================
 // MICROFONE E OUTROS APPS
 // ==========================================
