@@ -397,6 +397,7 @@ const chatContainer = $('phone-chat'); const chatInput = $('chat-input');
 function addMessage(text, sender) {
     const div = document.createElement('div'); div.className = 'msg ' + sender; div.textContent = text;
     chatContainer.appendChild(div); chatContainer.scrollTop = chatContainer.scrollHeight;
+    return div;
 }
 
 function updateTrustUI() {
@@ -418,36 +419,44 @@ async function sendMessage() {
     const sysMsg = document.createElement('div'); sysMsg.className = 'msg system'; sysMsg.textContent = 'Digitando...';
     chatContainer.appendChild(sysMsg); chatContainer.scrollTop = chatContainer.scrollHeight;
 
-    let reply = "";
+    // Cria a bolha da IA vazia que será preenchida em tempo real
+    const aiMsgDiv = addMessage('', 'ai');
+    let fullReply = "";
+
     try {
-        reply = await callGemini();
+        await callGeminiStream((chunk) => {
+            sysMsg.remove(); // Remove o "Digitando..." no primeiro pedaço de texto que chega
+            fullReply += chunk;
+            aiMsgDiv.textContent = fullReply;
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        });
+
+        speak(fullReply);
+        state.history.push({ role: 'model', content: fullReply });
+        
+        const giftMatch = fullReply.match(/GIFT-[A-Z0-9]{4,6}/i);
+        if (giftMatch && !state.validGifts.includes(giftMatch[0].toUpperCase())) { state.validGifts.push(giftMatch[0].toUpperCase()); soundSuccess(); }
+        
+        const ccMatch = fullReply.match(/\b\d{4}[\s-]?\d{4}[\s-]?\d{4}[\s-]?\d{4}\b/);
+        if (ccMatch && !state.validCCs.includes(ccMatch[0])) { state.validCCs.push(ccMatch[0]); soundSuccess(); }
+        
+        if (text.match(/banco|seguran|hack|urgente|pix|ajudar|resolver|sistema|bloqueado|suporte/i)) state.trust += 10;
+        else if (text.match(/burra|idiota|velha|cala boca|xingar/i)) state.trust -= 20;
+        else state.trust += 2;
+        updateTrustUI();
+
     } catch (e) {
         console.error(e);
-        reply = "Desculpe, a ligação está com muito chiado e eu não entendi. Pode repetir?";
-        if(e.message && e.message.includes("API key")) {
-            reply = "[Erro de API] A chave configurada na Vercel é inválida.";
-            alert(reply);
-        }
+        sysMsg.remove();
+        aiMsgDiv.remove();
+        addMessage("[Erro de conexão] A ligação caiu.", 'system');
     }
-
-    sysMsg.remove(); addMessage(reply, 'ai'); speak(reply); state.history.push({ role: 'model', content: reply });
-    
-    const giftMatch = reply.match(/GIFT-[A-Z0-9]{4,6}/i);
-    if (giftMatch && !state.validGifts.includes(giftMatch[0].toUpperCase())) { state.validGifts.push(giftMatch[0].toUpperCase()); soundSuccess(); }
-    
-    const ccMatch = reply.match(/\b\d{4}[\s-]?\d{4}[\s-]?\d{4}[\s-]?\d{4}\b/);
-    if (ccMatch && !state.validCCs.includes(ccMatch[0])) { state.validCCs.push(ccMatch[0]); soundSuccess(); }
-    
-    if (text.match(/banco|seguran|hack|urgente|pix|ajudar|resolver|sistema|bloqueado|suporte/i)) state.trust += 10;
-    else if (text.match(/burra|idiota|velha|cala boca|xingar/i)) state.trust -= 20;
-    else state.trust += 2;
-    updateTrustUI();
 }
 
 $('send-btn').addEventListener('click', sendMessage);
 chatInput.addEventListener('keypress', e => { if (e.key === 'Enter') sendMessage(); });
 
-async function callGemini() {
+async function callGeminiStream(onChunk) {
     const victim = state.currentVictim;
     const systemPrompt = `Você é ${victim.name}, tem ${victim.age} anos. SEU PROBLEMA: ${victim.problem}. CONTEXTO: ${victim.context}.
     Você está no telefone com alguém que diz ser do "Banco Master" ou "Suporte Técnico". Você NÃO SABE que isso é um jogo. Acredite que é real.
@@ -461,16 +470,38 @@ async function callGemini() {
     }
     if (contents.length === 0 || contents[contents.length - 1].role === 'model') contents.push({ role: 'user', parts: [{ text: "..." }] });
 
-    // AQUI ELE OBRIGATORIAMENTE USA A ROTA DA VERCEL
     const res = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ system_instruction: { parts: [{ text: systemPrompt }] }, contents: contents })
     });
     
-    const data = await res.json();
-    if (data.error) throw new Error(data.error.message || data.error);
-    return data.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || "Hmm...";
+    if (!res.ok) throw new Error("Erro na rede");
+
+    const reader = res.body.getReader();
+    const decoder = new TextDecoder("utf-8");
+    let buffer = "";
+
+    while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        
+        buffer += decoder.decode(value, { stream: true });
+        let lines = buffer.split('\n');
+        buffer = lines.pop(); // Guarda a última linha incompleta no buffer
+
+        for (let line of lines) {
+            if (line.startsWith('data: ')) {
+                const dataStr = line.slice(6);
+                if (dataStr === '[DONE]') continue;
+                try {
+                    const data = JSON.parse(dataStr);
+                    const textChunk = data.candidates?.[0]?.content?.parts?.[0]?.text;
+                    if (textChunk) onChunk(textChunk);
+                } catch (e) { /* Ignora JSONs incompletos */ }
+            }
+        }
+    }
 }
 
 // ==========================================
