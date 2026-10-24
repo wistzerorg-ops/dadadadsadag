@@ -15,7 +15,7 @@
     .fade-in { animation: fadeIn 1s ease-in-out forwards; }
     @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-    /* TELA DE INÍCIO (TERMINAL HACKER) */
+    /* TELA DE INÍCIO */
     #start-screen { background: #050505; color: #39FF14; font-family: 'Courier New', Courier, monospace; z-index: 9999; }
     .center-content { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; width: 100%; }
     #start-screen h1 { font-size: 60px; margin-bottom: 10px; text-shadow: 0 0 10px #39FF14; letter-spacing: 2px; text-align: center; }
@@ -24,7 +24,7 @@
     #start-btn:hover { background: #39FF14; color: #000; box-shadow: 0 0 30px #39FF14; }
     .scanline { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,0) 50%, rgba(0,0,0,0.2) 50%, rgba(0,0,0,0.2)); background-size: 100% 4px; pointer-events: none; opacity: 0.3; }
 
-    /* VÍDEO E BOTÃO PULAR */
+    /* VÍDEO */
     #video-screen { background: #000; z-index: 9000; width: 100vw; height: 100vh; }
     #video-screen.active { display: flex; }
     #intro-video { width: 100vw; height: 100vh; object-fit: contain; }
@@ -44,7 +44,7 @@
     .icon:active { transform: translate(4px, 4px); box-shadow: 0 0 0 #000; }
     .icon svg { width: 45px; height: 45px; fill: none; stroke: white; stroke-width: 2px; stroke-linecap: round; stroke-linejoin: round; }
 
-    /* POPUP DE LIGAÇÃO RECEBIDA */
+    /* POPUP DE LIGAÇÃO */
     #incoming-call-popup { position: absolute; top: 30px; right: 30px; background: #222; border: 4px solid #39FF14; border-radius: 12px; padding: 20px; z-index: 500; display: none; box-shadow: 0 0 20px #39FF14; animation: slideIn 0.3s ease-out; }
     #incoming-call-popup.active { display: block; }
     @keyframes slideIn { from { transform: translateX(100%); } to { transform: translateX(0); } }
@@ -54,14 +54,14 @@
     .btn-answer { background: #39FF14; color: #000; }
     .btn-decline { background: #ff3333; color: #fff; }
 
-    /* JANELAS (APPS) */
+    /* JANELAS */
     .window { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 500px; background: #888; border: 4px solid #000; border-radius: 12px; display: none; flex-direction: column; z-index: 100; box-shadow: 8px 8px 0 rgba(0,0,0,0.5); font-family: sans-serif; }
     .window.active { display: flex; }
     .window-header { background: #333; color: white; padding: 10px; display: flex; justify-content: space-between; align-items: center; border-bottom: 4px solid #000; border-radius: 8px 8px 0 0; font-weight: bold; }
     .close-btn { background: #ff3333; color: white; border: 2px solid #000; width: 30px; height: 30px; font-weight: bold; cursor: pointer; border-radius: 4px; }
     .window-body { padding: 15px; display: flex; flex-direction: column; gap: 10px; max-height: 70vh; overflow-y: auto; }
 
-    /* APP TELEFONE */
+    /* TELEFONE */
     #win-telefone { width: 420px; background: #888; }
     .phone-top-bar { display: flex; align-items: center; gap: 10px; font-family: 'Impact', sans-serif; font-size: 20px; margin-bottom: 5px; }
     .trust-bar-bg { flex: 1; height: 15px; background: #fff; border: 3px solid #000; border-radius: 10px; overflow: hidden; }
@@ -85,7 +85,6 @@
     .send-btn { background: #fff; border: 3px solid #000; border-radius: 5px; width: 40px; cursor: pointer; font-weight: bold; display: flex; justify-content: center; align-items: center; }
     .mic-btn { background: #fff; border: 3px solid #000; border-radius: 5px; width: 40px; cursor: pointer; font-weight: bold; display: flex; justify-content: center; align-items: center; }
     .mic-btn.listening { background: #ff3333; color: white; animation: pulse 1s infinite; }
-    
     .hangup-btn { width: 100%; background: #8B0000; color: #000; border: 3px solid #000; border-radius: 20px; padding: 10px; font-family: 'Impact', sans-serif; font-size: 24px; cursor: pointer; margin-top: 10px; letter-spacing: 2px; }
     .hangup-btn:hover { background: #ff0000; color: white; }
 
@@ -101,7 +100,6 @@
     input:checked + .slider { background-color: #39FF14; }
     input:checked + .slider:before { transform: translateX(26px); }
     .mission-done { color: #39FF14; text-shadow: 1px 1px 0 #000; font-weight: bold; }
-
     @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
 </style>
 </head>
@@ -132,7 +130,6 @@
         <div class="title-text">SCAMMER PAY GUGU GAME!</div>
     </div>
 
-    <!-- Popup Ligações -->
     <div id="incoming-call-popup">
         <div class="incoming-title">📞 Ligação Recebida!</div>
         <div style="font-family: sans-serif; margin-bottom: 15px; color: #fff;" id="incoming-caller-name">Cliente</div>
@@ -142,32 +139,15 @@
         </div>
     </div>
 
-    <!-- Ícones -->
     <div class="sidebar">
-        <div class="icon" onclick="openApp('telefone')">
-            <svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
-        </div>
-        <div class="icon" onclick="openApp('missoes')">
-            <svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"></path><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg>
-        </div>
-        <div class="icon" onclick="openApp('config')">
-            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
-        </div>
-        <div class="icon" onclick="openApp('banco')">
-            <svg viewBox="0 0 24 24"><rect x="2" y="6" width="20" height="12" rx="2"></rect><path d="M2 10h20"></path></svg>
-        </div>
-        <div class="icon" onclick="openApp('gift')">
-            <svg viewBox="0 0 24 24"><rect x="3" y="8" width="18" height="4"></rect><line x1="12" y1="8" x2="12" y2="21"></line><path d="M12 8c-2.5 0-4-1.5-4-3s1.5-3 3-3 3 1.5 3 3-1.5 3-3 3z"></path><path d="M12 8c2.5 0 4-1.5 4-3s-1.5-3-3-3-3 1.5-3 3 1.5 3 3 3z"></path></svg>
-        </div>
-        <div class="icon" onclick="openApp('email')">
-            <svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
-        </div>
-        <div class="icon" onclick="openApp('info')">
-            <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
-        </div>
-        <div class="icon" onclick="openApp('cartao')">
-            <svg viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg>
-        </div>
+        <div class="icon" onclick="openApp('telefone')"><svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg></div>
+        <div class="icon" onclick="openApp('missoes')"><svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"></path><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg></div>
+        <div class="icon" onclick="openApp('config')"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg></div>
+        <div class="icon" onclick="openApp('banco')"><svg viewBox="0 0 24 24"><rect x="2" y="6" width="20" height="12" rx="2"></rect><path d="M2 10h20"></path></svg></div>
+        <div class="icon" onclick="openApp('gift')"><svg viewBox="0 0 24 24"><rect x="3" y="8" width="18" height="4"></rect><line x1="12" y1="8" x2="12" y2="21"></line><path d="M12 8c-2.5 0-4-1.5-4-3s1.5-3 3-3 3 1.5 3 3-1.5 3-3 3z"></path><path d="M12 8c2.5 0 4-1.5 4-3s-1.5-3-3-3-3 1.5-3 3 1.5 3 3 3z"></path></svg></div>
+        <div class="icon" onclick="openApp('email')"><svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg></div>
+        <div class="icon" onclick="openApp('info')"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg></div>
+        <div class="icon" onclick="openApp('cartao')"><svg viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg></div>
     </div>
 </div>
 
@@ -179,30 +159,23 @@
             <div class="trust-bar-bg"><div class="trust-bar-fill" id="trust-fill"></div></div>
             <span id="trust-text" class="trust-text">14%</span>
         </div>
-        
         <div class="phone-face-box">
             <svg width="100" height="100" viewBox="0 0 100 100">
                 <circle id="npc-face-color" cx="50" cy="50" r="40" fill="#C19A6B" stroke="#000" stroke-width="3"/>
                 <path id="npc-hair" d="M 10 50 Q 10 10 50 10 Q 90 10 90 50 Q 80 20 50 20 Q 20 20 10 50" fill="#000" />
-                <circle cx="35" cy="45" r="8" fill="#fff" stroke="#000" stroke-width="2"/>
-                <circle cx="35" cy="45" r="4" fill="#00BFFF"/>
-                <circle cx="65" cy="45" r="8" fill="#fff" stroke="#000" stroke-width="2"/>
-                <circle cx="65" cy="45" r="4" fill="#00BFFF"/>
-                <line x1="25" y1="30" x2="45" y2="35" stroke="#000" stroke-width="3"/>
-                <line x1="75" y1="30" x2="55" y2="35" stroke="#000" stroke-width="3"/>
+                <circle cx="35" cy="45" r="8" fill="#fff" stroke="#000" stroke-width="2"/><circle cx="35" cy="45" r="4" fill="#00BFFF"/>
+                <circle cx="65" cy="45" r="8" fill="#fff" stroke="#000" stroke-width="2"/><circle cx="65" cy="45" r="4" fill="#00BFFF"/>
+                <line x1="25" y1="30" x2="45" y2="35" stroke="#000" stroke-width="3"/><line x1="75" y1="30" x2="55" y2="35" stroke="#000" stroke-width="3"/>
                 <line x1="50" y1="45" x2="50" y2="60" stroke="#000" stroke-width="3"/>
                 <line id="face-mouth" x1="35" y1="75" x2="65" y2="75" stroke="#000" stroke-width="3"/>
             </svg>
         </div>
-
         <div class="phone-chat" id="phone-chat"></div>
-
         <div class="phone-controls">
             <input type="text" id="chat-input" class="phone-input" placeholder="Digite..." autocomplete="off">
             <button class="send-btn" id="send-btn" title="Enviar">↑</button>
             <button class="mic-btn" id="mic-btn" title="Segure para falar">🎤</button>
         </div>
-
         <button class="hangup-btn" id="hangup-btn">DESLIGAR</button>
     </div>
     <div class="window-header" style="border-radius: 0 0 8px 8px; border-top: 4px solid #000; border-bottom: none;">
@@ -214,16 +187,14 @@
 <!-- APP: MISSÕES -->
 <div id="win-missoes" class="window">
     <div class="window-header"><span>Missões</span><button class="close-btn" onclick="closeApp('missoes')">X</button></div>
-    <div class="window-body" id="missions-body">
-        <!-- Preenchido via JS -->
-    </div>
+    <div class="window-body" id="missions-body"></div>
 </div>
 
 <!-- APP: CONFIGURAÇÕES -->
 <div id="win-config" class="window">
     <div class="window-header"><span>Configurações</span><button class="close-btn" onclick="closeApp('config')">X</button></div>
     <div class="window-body">
-        <label style="font-family: sans-serif; font-weight: bold; color: #000;">Receber Ligações de IAs (Aleatórias)</label>
+        <label style="font-family: sans-serif; font-weight: bold; color: #000;">Receber Ligações (Aleatórias)</label>
         <label class="switch">
             <input type="checkbox" id="toggle-ai-calls" checked>
             <span class="slider"></span>
@@ -262,9 +233,7 @@
         <button class="action-btn" onclick="sendEmail()">Enviar Email</button>
         <hr style="border: 1px solid #000; margin: 10px 0;">
         <h3 style="font-family: sans-serif; color: #000;">Caixa de Entrada:</h3>
-        <div id="email-list">
-            <div class="list-item"><span>De: suporte@bmaster.com</span><span>Bem-vindo ao Banco Master!</span></div>
-        </div>
+        <div id="email-list"></div>
     </div>
 </div>
 
@@ -291,13 +260,6 @@
 
 <script>
 // ==========================================
-// CONFIGURAÇÃO DA API
-// COLOQUE SUA CHAVE AQUI SE FOR TESTAR NO LIVE SERVER
-// SE FOR VERCEL, DEIXE VAZIO "" E CONFIGURE NA VERCEL
-// ==========================================
-const GEMINI_API_KEY = ""; 
-
-// ==========================================
 // BANCO DE DADOS DE VÍTIMAS
 // ==========================================
 const VICTIMS = [
@@ -312,171 +274,93 @@ const VICTIMS = [
 ];
 
 const state = {
-    saldo: 0,
-    trust: 14,
-    isCallActive: false,
-    history: [],
-    validGifts: [],
-    validCCs: [],
-    aiCallsEnabled: true,
-    currentVictim: null,
-    incomingInterval: null,
-    emailBonus: 0,
-    missions: {
-        m1: false, // Fazer primeira ligação
-        m2: false, // Roubar Gift Card
-        m3: false, // Clonar Cartão
-        m4: false, // Acumular 5k
-        m5: false  // Confiança 100%
-    }
+    saldo: 0, trust: 14, isCallActive: false, history: [], validGifts: [], validCCs: [],
+    aiCallsEnabled: true, currentVictim: null, incomingInterval: null, emailBonus: 0,
+    missions: { m1: false, m2: false, m3: false, m4: false, m5: false }
 };
 
 const $ = id => document.getElementById(id);
 
 // ==========================================
-// SISTEMA DE ÁUDIO (WEB AUDIO API)
+// ÁUDIO
 // ==========================================
 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 function playTone(freq, type, duration, vol=0.1) {
     if(audioCtx.state === 'suspended') audioCtx.resume();
-    const osc = audioCtx.createOscillator();
-    const gain = audioCtx.createGain();
-    osc.type = type;
-    osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+    const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain();
+    osc.type = type; osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
     gain.gain.setValueAtTime(vol, audioCtx.currentTime);
     gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration);
-    osc.connect(gain);
-    gain.connect(audioCtx.destination);
-    osc.start();
-    osc.stop(audioCtx.currentTime + duration);
+    osc.connect(gain); gain.connect(audioCtx.destination); osc.start(); osc.stop(audioCtx.currentTime + duration);
 }
 function soundClick() { playTone(600, 'square', 0.1, 0.05); }
 function soundError() { playTone(150, 'sawtooth', 0.3, 0.1); }
 function soundSuccess() { playTone(600, 'sine', 0.1); setTimeout(()=>playTone(800, 'sine', 0.2), 100); }
 function soundHangup() { playTone(400, 'sine', 0.2); setTimeout(()=>playTone(300, 'sine', 0.2), 150); }
 let ringInterval;
-function startRing() {
-    if(audioCtx.state === 'suspended') audioCtx.resume();
-    let toggle = false;
-    ringInterval = setInterval(() => {
-        playTone(toggle ? 440 : 480, 'sine', 0.4, 0.1);
-        toggle = !toggle;
-    }, 500);
-}
+function startRing() { if(audioCtx.state === 'suspended') audioCtx.resume(); let toggle = false; ringInterval = setInterval(() => { playTone(toggle ? 440 : 480, 'sine', 0.4, 0.1); toggle = !toggle; }, 500); }
 function stopRing() { clearInterval(ringInterval); }
 
 // ==========================================
-// FLUXO DE TELAS
+// TELAS
 // ==========================================
 $('start-btn').addEventListener('click', () => {
     soundClick();
     $('start-screen').classList.remove('active');
     $('video-screen').classList.add('active', 'fade-in');
-    
-    const video = $('intro-video');
-    let playPromise = video.play();
-    if (playPromise !== undefined) {
-        playPromise.catch(e => skipVideo());
-    }
+    $('intro-video').play().catch(e => skipVideo());
 });
-
 $('intro-video').addEventListener('ended', skipVideo);
-
 function skipVideo() {
-    soundClick();
-    $('intro-video').pause();
+    soundClick(); $('intro-video').pause();
     $('video-screen').classList.remove('active', 'fade-in');
     $('desktop').classList.add('active');
-    startIncomingCallsTimer();
-    updateMissions();
+    startIncomingCallsTimer(); updateMissions();
 }
+function openApp(appId) { soundClick(); if (appId === 'telefone' && !state.isCallActive) startCall(false); $('win-' + appId).classList.add('active'); }
+function closeApp(appId) { soundClick(); $('win-' + appId).classList.remove('active'); }
 
 // ==========================================
-// APPS E JANELAS
-// ==========================================
-function openApp(appId) {
-    soundClick();
-    if (appId === 'telefone' && !state.isCallActive) {
-        startCall(false);
-    }
-    $('win-' + appId).classList.add('active');
-}
-function closeApp(appId) {
-    soundClick();
-    $('win-' + appId).classList.remove('active');
-}
-
-// ==========================================
-// MISSÕES
+// MISSÕES E LIGAÇÕES
 // ==========================================
 function updateMissions() {
-    if (state.isCallActive && !state.missions.m1) { state.missions.m1 = true; }
+    if (state.isCallActive && !state.missions.m1) state.missions.m1 = true;
     if (state.saldo >= 5000 && !state.missions.m4) { state.missions.m4 = true; soundSuccess(); }
     if (state.trust >= 100 && !state.missions.m5) { state.missions.m5 = true; soundSuccess(); }
 
-    const body = $('missions-body');
-    body.innerHTML = `
+    $('missions-body').innerHTML = `
         <div class="list-item"><span>${state.missions.m1 ? '✅' : '⬜'} Fazer sua primeira ligação</span></div>
         <div class="list-item"><span>${state.missions.m2 ? '✅' : '⬜'} Resgatar um Gift Card</span></div>
         <div class="list-item"><span>${state.missions.m3 ? '✅' : '⬜'} Clonar um Cartão de Crédito</span></div>
         <div class="list-item"><span>${state.missions.m4 ? '✅' : '⬜'} Acumular R$ 5.000</span></div>
         <div class="list-item"><span>${state.missions.m5 ? '✅' : '⬜'} Deixar uma vítima com 100% de confiança</span></div>
     `;
-    body.querySelectorAll('span').forEach(s => {
-        if (s.textContent.includes('✅')) s.classList.add('mission-done');
-    });
+    $('missions-body').querySelectorAll('span').forEach(s => { if (s.textContent.includes('✅')) s.classList.add('mission-done'); });
 }
 
-// ==========================================
-// SISTEMA DE LIGAÇÕES
-// ==========================================
 function startIncomingCallsTimer() {
     if (state.incomingInterval) clearInterval(state.incomingInterval);
     state.incomingInterval = setInterval(() => {
-        if (state.aiCallsEnabled && !state.isCallActive && !$('incoming-call-popup').classList.contains('active')) {
-            triggerIncomingCall();
-        }
+        if (state.aiCallsEnabled && !state.isCallActive && !$('incoming-call-popup').classList.contains('active')) triggerIncomingCall();
     }, 45000);
 }
 
 function triggerIncomingCall() {
-    const randomVictim = VICTIMS[Math.floor(Math.random() * VICTIMS.length)];
-    state.currentVictim = randomVictim;
-    $('incoming-caller-name').textContent = randomVictim.name;
-    $('incoming-call-popup').classList.add('active');
-    startRing();
+    state.currentVictim = VICTIMS[Math.floor(Math.random() * VICTIMS.length)];
+    $('incoming-caller-name').textContent = state.currentVictim.name;
+    $('incoming-call-popup').classList.add('active'); startRing();
 }
+function answerIncomingCall() { stopRing(); soundClick(); $('incoming-call-popup').classList.remove('active'); openApp('telefone'); }
+function declineIncomingCall() { stopRing(); soundClick(); $('incoming-call-popup').classList.remove('active'); state.currentVictim = null; }
 
-function answerIncomingCall() {
-    stopRing(); soundClick();
-    $('incoming-call-popup').classList.remove('active');
-    openApp('telefone');
-}
-
-function declineIncomingCall() {
-    stopRing(); soundClick();
-    $('incoming-call-popup').classList.remove('active');
-    state.currentVictim = null;
-}
-
-function startCall(isPlayerCalling) {
-    if (!state.currentVictim) {
-        state.currentVictim = VICTIMS[Math.floor(Math.random() * VICTIMS.length)];
-    }
+function startCall() {
+    if (!state.currentVictim) state.currentVictim = VICTIMS[Math.floor(Math.random() * VICTIMS.length)];
     const victim = state.currentVictim;
     
-    state.isCallActive = true;
-    state.trust = 14 + state.emailBonus; // Aplica bônus de email
-    state.history = [];
-    $('phone-chat').innerHTML = '';
-    $('current-caller-name').textContent = `Falando com: ${victim.name}`;
-    
-    $('npc-face-color').setAttribute('fill', victim.color);
-    $('npc-hair').setAttribute('fill', victim.hair);
-    
-    updateTrustUI();
-    addMessage('Chamada conectada...', 'system');
-    updateMissions();
+    state.isCallActive = true; state.trust = 14 + state.emailBonus; state.history = [];
+    $('phone-chat').innerHTML = ''; $('current-caller-name').textContent = `Falando com: ${victim.name}`;
+    $('npc-face-color').setAttribute('fill', victim.color); $('npc-hair').setAttribute('fill', victim.hair);
+    updateTrustUI(); addMessage('Chamada conectada...', 'system'); updateMissions();
     
     setTimeout(() => {
         let firstLine = `Alô? Quem é?`;
@@ -487,69 +371,42 @@ function startCall(isPlayerCalling) {
         if (victim.name === "Larissa") firstLine = "Oi? Gente, meu insta foi hackeado, você é do suporte?";
         if (victim.name === "Seu Joaquim") firstLine = "Pelo amor de Deus, cadê meu neto?!";
         if (victim.name === "Marina") firstLine = "Alô? É da loja? Cadê meu celular?!";
-        
-        addMessage(firstLine, 'ai');
-        speak(firstLine);
+        addMessage(firstLine, 'ai'); speak(firstLine);
     }, 1000);
 }
 
 $('hangup-btn').addEventListener('click', () => {
-    soundHangup();
-    state.isCallActive = false;
-    state.currentVictim = null;
-    state.emailBonus = 0; // Reseta bônus
-    addMessage('Chamada encerrada.', 'system');
-    window.speechSynthesis.cancel();
+    soundHangup(); state.isCallActive = false; state.currentVictim = null; state.emailBonus = 0;
+    addMessage('Chamada encerrada.', 'system'); window.speechSynthesis.cancel();
 });
 
 function speak(text) {
     if (!('speechSynthesis' in window)) return;
     window.speechSynthesis.cancel();
     const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = 'pt-BR';
-    utterance.rate = 1.1;
-    if (state.currentVictim) {
-        if (state.currentVictim.age > 60) utterance.pitch = 1.1;
-        else if (state.currentVictim.age < 30) utterance.pitch = 1.3;
-        else utterance.pitch = 0.9;
-    }
+    utterance.lang = 'pt-BR'; utterance.rate = 1.1;
+    if (state.currentVictim) utterance.pitch = state.currentVictim.age > 60 ? 1.1 : (state.currentVictim.age < 30 ? 1.3 : 0.9);
     window.speechSynthesis.speak(utterance);
 }
 
 // ==========================================
-// CHAT E INTELIGÊNCIA ARTIFICIAL
+// CHAT E IA
 // ==========================================
-const chatContainer = $('phone-chat');
-const chatInput = $('chat-input');
+const chatContainer = $('phone-chat'); const chatInput = $('chat-input');
 
 function addMessage(text, sender) {
-    const div = document.createElement('div');
-    div.className = 'msg ' + sender;
-    div.textContent = text;
-    chatContainer.appendChild(div);
-    chatContainer.scrollTop = chatContainer.scrollHeight;
+    const div = document.createElement('div'); div.className = 'msg ' + sender; div.textContent = text;
+    chatContainer.appendChild(div); chatContainer.scrollTop = chatContainer.scrollHeight;
 }
 
 function updateTrustUI() {
-    let trust = state.trust;
-    if (trust < 0) trust = 0;
-    if (trust > 100) trust = 100;
+    let trust = Math.max(0, Math.min(100, state.trust));
     state.trust = trust;
-    
-    $('trust-fill').style.width = trust + '%';
-    $('trust-text').textContent = trust + '%';
-    
+    $('trust-fill').style.width = trust + '%'; $('trust-text').textContent = trust + '%';
     const mouth = $('face-mouth');
-    if (trust < 30) {
-        $('trust-text').textContent = 'Suspeitando';
-        mouth.setAttribute('d', 'M 35 75 Q 50 70 65 75');
-    } else if (trust < 70) {
-        $('trust-text').textContent = 'Neutro';
-        mouth.setAttribute('d', 'M 35 75 L 65 75');
-    } else {
-        $('trust-text').textContent = 'Confiando';
-        mouth.setAttribute('d', 'M 35 70 Q 50 85 65 70');
-    }
+    if (trust < 30) { $('trust-text').textContent = 'Suspeitando'; mouth.setAttribute('d', 'M 35 75 Q 50 70 65 75'); }
+    else if (trust < 70) { $('trust-text').textContent = 'Neutro'; mouth.setAttribute('d', 'M 35 75 L 65 75'); }
+    else { $('trust-text').textContent = 'Confiando'; mouth.setAttribute('d', 'M 35 70 Q 50 85 65 70'); }
     updateMissions();
 }
 
@@ -557,16 +414,9 @@ async function sendMessage() {
     const text = chatInput.value.trim();
     if (!text || !state.isCallActive) return;
     
-    soundClick();
-    chatInput.value = '';
-    addMessage(text, 'player');
-    state.history.push({ role: 'user', content: text });
-    
-    const sysMsg = document.createElement('div');
-    sysMsg.className = 'msg system';
-    sysMsg.textContent = 'Digitando...';
-    chatContainer.appendChild(sysMsg);
-    chatContainer.scrollTop = chatContainer.scrollHeight;
+    soundClick(); chatInput.value = ''; addMessage(text, 'player'); state.history.push({ role: 'user', content: text });
+    const sysMsg = document.createElement('div'); sysMsg.className = 'msg system'; sysMsg.textContent = 'Digitando...';
+    chatContainer.appendChild(sysMsg); chatContainer.scrollTop = chatContainer.scrollHeight;
 
     let reply = "";
     try {
@@ -574,34 +424,23 @@ async function sendMessage() {
     } catch (e) {
         console.error(e);
         reply = "Desculpe, a ligação está com muito chiado e eu não entendi. Pode repetir?";
+        if(e.message && e.message.includes("API key")) {
+            reply = "[Erro de API] A chave configurada na Vercel é inválida.";
+            alert(reply);
+        }
     }
 
-    sysMsg.remove();
-    addMessage(reply, 'ai');
-    speak(reply);
-    state.history.push({ role: 'model', content: reply });
+    sysMsg.remove(); addMessage(reply, 'ai'); speak(reply); state.history.push({ role: 'model', content: reply });
     
-    // Extrai dados válidos da resposta
     const giftMatch = reply.match(/GIFT-[A-Z0-9]{4,6}/i);
-    if (giftMatch && !state.validGifts.includes(giftMatch[0].toUpperCase())) {
-        state.validGifts.push(giftMatch[0].toUpperCase());
-        soundSuccess();
-    }
+    if (giftMatch && !state.validGifts.includes(giftMatch[0].toUpperCase())) { state.validGifts.push(giftMatch[0].toUpperCase()); soundSuccess(); }
     
     const ccMatch = reply.match(/\b\d{4}[\s-]?\d{4}[\s-]?\d{4}[\s-]?\d{4}\b/);
-    if (ccMatch && !state.validCCs.includes(ccMatch[0])) {
-        state.validCCs.push(ccMatch[0]);
-        soundSuccess();
-    }
+    if (ccMatch && !state.validCCs.includes(ccMatch[0])) { state.validCCs.push(ccMatch[0]); soundSuccess(); }
     
-    // Modifica confiança
-    if (text.match(/banco|seguran|hack|urgente|pix|ajudar|resolver|sistema|bloqueado|suporte/i)) {
-        state.trust += 10;
-    } else if (text.match(/burra|idiota|velha|cala boca|xingar/i)) {
-        state.trust -= 20;
-    } else {
-        state.trust += 2;
-    }
+    if (text.match(/banco|seguran|hack|urgente|pix|ajudar|resolver|sistema|bloqueado|suporte/i)) state.trust += 10;
+    else if (text.match(/burra|idiota|velha|cala boca|xingar/i)) state.trust -= 20;
+    else state.trust += 2;
     updateTrustUI();
 }
 
@@ -617,142 +456,67 @@ async function callGemini() {
     let contents = [];
     for (let h of state.history) {
         if (contents.length === 0 && h.role === 'model') continue;
-        if (contents.length > 0 && contents[contents.length - 1].role === h.role) {
-            contents[contents.length - 1].parts[0].text += " " + h.content;
-        } else {
-            contents.push({ role: h.role, parts: [{ text: h.content }] });
-        }
+        if (contents.length > 0 && contents[contents.length - 1].role === h.role) contents[contents.length - 1].parts[0].text += " " + h.content;
+        else contents.push({ role: h.role, parts: [{ text: h.content }] });
     }
-    if (contents.length === 0 || contents[contents.length - 1].role === 'model') {
-        contents.push({ role: 'user', parts: [{ text: "..." }] });
-    }
+    if (contents.length === 0 || contents[contents.length - 1].role === 'model') contents.push({ role: 'user', parts: [{ text: "..." }] });
 
-    const payload = { system_instruction: { parts: [{ text: systemPrompt }] }, contents: contents };
-    const url = (GEMINI_API_KEY && GEMINI_API_KEY.trim() !== "") 
-        ? `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`
-        : `/api/chat`;
-
-    const res = await fetch(url, {
+    // AQUI ELE OBRIGATORIAMENTE USA A ROTA DA VERCEL
+    const res = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
+        body: JSON.stringify({ system_instruction: { parts: [{ text: systemPrompt }] }, contents: contents })
     });
     
     const data = await res.json();
-    if (data.error) throw new Error(data.error.message);
+    if (data.error) throw new Error(data.error.message || data.error);
     return data.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || "Hmm...";
 }
 
 // ==========================================
-// SPEECH TO TEXT (MICROFONE)
+// MICROFONE E OUTROS APPS
 // ==========================================
 let recognition;
 if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    recognition = new SpeechRecognition();
-    recognition.lang = 'pt-BR';
-    recognition.interimResults = false;
-
-    recognition.onresult = (event) => {
-        chatInput.value = event.results[0][0].transcript;
-        sendMessage();
-    };
+    recognition = new SpeechRecognition(); recognition.lang = 'pt-BR'; recognition.interimResults = false;
+    recognition.onresult = (event) => { chatInput.value = event.results[0][0].transcript; sendMessage(); };
     recognition.onend = () => $('mic-btn').classList.remove('listening');
 }
-
-$('mic-btn').addEventListener('mousedown', () => {
-    if (recognition && state.isCallActive) {
-        $('mic-btn').classList.add('listening');
-        window.speechSynthesis.cancel();
-        recognition.start();
-    }
-});
+$('mic-btn').addEventListener('mousedown', () => { if (recognition && state.isCallActive) { $('mic-btn').classList.add('listening'); window.speechSynthesis.cancel(); recognition.start(); } });
 $('mic-btn').addEventListener('mouseup', () => { if (recognition) recognition.stop(); });
 $('mic-btn').addEventListener('mouseleave', () => { if (recognition && $('mic-btn').classList.contains('listening')) recognition.stop(); });
 
-// ==========================================
-// FUNÇÕES DOS APPS
-// ==========================================
-function updateBank() {
-    $('bank-balance').textContent = `R$ ${state.saldo.toFixed(2).replace('.', ',')}`;
-    updateMissions();
-}
-
+function updateBank() { $('bank-balance').textContent = `R$ ${state.saldo.toFixed(2).replace('.', ',')}`; updateMissions(); }
 function redeemGift() {
-    soundClick();
-    const code = $('gift-input').value.toUpperCase().trim();
-    if (!code) return;
-    
+    soundClick(); const code = $('gift-input').value.toUpperCase().trim(); if (!code) return;
     if (state.validGifts.includes(code)) {
-        state.saldo += 500;
-        updateBank();
-        state.validGifts = state.validGifts.filter(c => c !== code);
-        $('gift-input').value = '';
-        soundSuccess();
-        
+        state.saldo += 500; updateBank(); state.validGifts = state.validGifts.filter(c => c !== code); $('gift-input').value = ''; soundSuccess();
         if (!state.missions.m2) { state.missions.m2 = true; updateMissions(); }
-        
-        const div = document.createElement('div');
-        div.className = 'list-item';
-        div.innerHTML = `<span>${code}</span><span style="color: green;">+ R$ 500,00</span>`;
-        $('gift-list').appendChild(div);
-    } else {
-        soundError();
-        alert('Código inválido! Você só pode resgatar códigos GIFT que a IA te passou na ligação.');
-    }
+        const div = document.createElement('div'); div.className = 'list-item'; div.innerHTML = `<span>${code}</span><span style="color: green;">+ R$ 500,00</span>`; $('gift-list').appendChild(div);
+    } else { soundError(); alert('Código inválido! Você só pode resgatar códigos que a IA te passou.'); }
 }
-
 function checkCreditCard() {
-    soundClick();
-    const num = $('cc-input').value.trim();
+    soundClick(); const num = $('cc-input').value.trim();
     if (state.validCCs.includes(num)) {
-        const cardValue = Math.floor(Math.random() * 4500) + 500;
-        state.saldo += cardValue;
-        updateBank();
-        
+        const cardValue = Math.floor(Math.random() * 4500) + 500; state.saldo += cardValue; updateBank();
         if (!state.missions.m3) { state.missions.m3 = true; updateMissions(); }
-        soundSuccess();
-        
-        $('cc-result').style.color = "green";
-        $('cc-result').textContent = `Cartão clonado! + R$ ${cardValue},00 adicionados.`;
-        $('cc-input').value = '';
-    } else {
-        soundError();
-        $('cc-result').textContent = "Número inválido! Você só pode usar cartões que a IA te falou.";
-        $('cc-result').style.color = "red";
-    }
+        soundSuccess(); $('cc-result').style.color = "green"; $('cc-result').textContent = `Cartão clonado! + R$ ${cardValue},00 adicionados.`; $('cc-input').value = '';
+    } else { soundError(); $('cc-result').textContent = "Número inválido! Você só pode usar os números que a IA falou."; $('cc-result').style.color = "red"; }
 }
-
 function sendEmail() {
-    soundClick();
-    const body = $('email-body').value.toLowerCase();
-    if (!body) return;
-
-    // Simula Phishing
+    soundClick(); const body = $('email-body').value.toLowerCase(); if (!body) return;
     if (body.match(/link|senha|atualizar|prêmio|premio|urgente|clique/)) {
-        state.emailBonus += 20;
-        soundSuccess();
-        const div = document.createElement('div');
-        div.className = 'list-item';
-        div.innerHTML = `<span>Para: Cliente</span><span style="color: green;">Email enviado! (Bônus de confiança: +20%)</span>`;
-        $('email-list').appendChild(div);
+        state.emailBonus += 20; soundSuccess(); const div = document.createElement('div'); div.className = 'list-item';
+        div.innerHTML = `<span>Para: Cliente</span><span style="color: green;">Email enviado! (+20% de confiança inicial)</span>`; $('email-list').appendChild(div);
     } else {
-        const div = document.createElement('div');
-        div.className = 'list-item';
-        div.innerHTML = `<span>Para: Cliente</span><span style="color: #666;">Email enviado. (Sem efeito)</span>`;
-        $('email-list').appendChild(div);
+        const div = document.createElement('div'); div.className = 'list-item';
+        div.innerHTML = `<span>Para: Cliente</span><span style="color: #666;">Email enviado (Sem efeito)</span>`; $('email-list').appendChild(div);
     }
     $('email-body').value = '';
 }
-
-$('toggle-ai-calls').addEventListener('change', (e) => {
-    state.aiCallsEnabled = e.target.checked;
-});
-
-// Init
-updateBank();
-updateTrustUI();
-updateMissions();
+$('toggle-ai-calls').addEventListener('change', (e) => state.aiCallsEnabled = e.target.checked);
+updateBank(); updateTrustUI(); updateMissions();
 </script>
 </body>
 </html>
