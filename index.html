@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Scammer Pay Gugu Game</title>
+<style>
+    /* RESET E BASE */
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Impact', 'Arial Black', sans-serif; user-select: none; }
+    body { background: #000; overflow: hidden; height: 100vh; width: 100vw; }
+    
+    /* TELAS */
+    .screen { position: absolute; inset: 0; display: none; }
+    .screen.active { display: block; }
+    .fade-in { animation: fadeIn 1s ease-in-out forwards; }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+    /* TELA DE INÍCIO (TERMINAL HACKER) */
+    #start-screen { background: #050505; color: #39FF14; font-family: 'Courier New', Courier, monospace; z-index: 9999; }
+    .center-content { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; width: 100%; }
+    #start-screen h1 { font-size: 60px; margin-bottom: 10px; text-shadow: 0 0 10px #39FF14; letter-spacing: 2px; text-align: center; }
+    .subtitle { color: #888; margin-bottom: 40px; font-size: 16px; text-align: center; max-width: 600px; line-height: 1.5; }
+    #start-btn { padding: 15px 50px; font-size: 24px; font-family: inherit; background: transparent; color: #39FF14; border: 2px solid #39FF14; cursor: pointer; transition: 0.2s; text-transform: uppercase; letter-spacing: 3px; box-shadow: 0 0 10px rgba(57, 255, 20, 0.2); }
+    #start-btn:hover { background: #39FF14; color: #000; box-shadow: 0 0 30px #39FF14; }
+    .scanline { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,0) 50%, rgba(0,0,0,0.2) 50%, rgba(0,0,0,0.2)); background-size: 100% 4px; pointer-events: none; opacity: 0.3; }
+
+    /* VÍDEO E BOTÃO PULAR */
+    #video-screen { background: #000; z-index: 9000; width: 100vw; height: 100vh; }
+    #video-screen.active { display: flex; }
+    #intro-video { width: 100vw; height: 100vh; object-fit: contain; }
+    #skip-btn { position: absolute; bottom: 40px; right: 40px; background: rgba(0,0,0,0.7); color: #fff; border: 2px solid #fff; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-family: sans-serif; font-weight: bold; z-index: 9999; transition: 0.2s; }
+    #skip-btn:hover { background: #fff; color: #000; }
+
+    /* ÁREA DE TRABALHO */
+    #desktop { background-color: #39FF14; position: relative; width: 100vw; height: 100vh; overflow: hidden; background-image: url("data:image/svg+xml,%3Csvg width='200' height='200' viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M100 20 L110 80 L170 90 L110 100 L100 160 L90 100 L30 90 L90 80 Z' fill='none' stroke='white' stroke-width='3'/%3E%3C/svg%3E"); background-size: 300px 300px; }
+    .main-star-container { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 700px; height: 700px; z-index: 5; }
+    .main-star-svg { width: 100%; height: 100%; fill: #FFD700; stroke: #000; stroke-width: 6px; }
+    .title-text { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 65px; color: #000; white-space: nowrap; letter-spacing: 2px; text-align: center; }
+    
+    /* BARRA LATERAL */
+    .sidebar { position: absolute; top: 20px; left: 20px; display: flex; flex-direction: column; gap: 15px; z-index: 10; }
+    .icon { width: 75px; height: 75px; background: #666; border: 4px solid #000; border-radius: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.1s; box-shadow: 4px 4px 0 #000; }
+    .icon:hover { background: #888; }
+    .icon:active { transform: translate(4px, 4px); box-shadow: 0 0 0 #000; }
+    .icon svg { width: 45px; height: 45px; fill: none; stroke: white; stroke-width: 2px; stroke-linecap: round; stroke-linejoin: round; }
+
+    /* POPUP DE LIGAÇÃO RECEBIDA */
+    #incoming-call-popup { position: absolute; top: 30px; right: 30px; background: #222; border: 4px solid #39FF14; border-radius: 12px; padding: 20px; z-index: 500; display: none; box-shadow: 0 0 20px #39FF14; animation: slideIn 0.3s ease-out; }
+    #incoming-call-popup.active { display: block; }
+    @keyframes slideIn { from { transform: translateX(100%); } to { transform: translateX(0); } }
+    .incoming-title { color: #39FF14; font-size: 20px; margin-bottom: 10px; font-family: sans-serif; font-weight: bold; }
+    .incoming-actions { display: flex; gap: 10px; }
+    .incoming-btn { padding: 10px 20px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; font-family: sans-serif; }
+    .btn-answer { background: #39FF14; color: #000; }
+    .btn-decline { background: #ff3333; color: #fff; }
+
+    /* JANELAS (APPS) */
+    .window { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 500px; background: #888; border: 4px solid #000; border-radius: 12px; display: none; flex-direction: column; z-index: 100; box-shadow: 8px 8px 0 rgba(0,0,0,0.5); font-family: sans-serif; }
+    .window.active { display: flex; }
+    .window-header { background: #333; color: white; padding: 10px; display: flex; justify-content: space-between; align-items: center; border-bottom: 4px solid #000; border-radius: 8px 8px 0 0; font-weight: bold; }
+    .close-btn { background: #ff3333; color: white; border: 2px solid #000; width: 30px; height: 30px; font-weight: bold; cursor: pointer; border-radius: 4px; }
+    .window-body { padding: 15px; display: flex; flex-direction: column; gap: 10px; max-height: 70vh; overflow-y: auto; }
+
+    /* APP TELEFONE */
+    #win-telefone { width: 420px; background: #888; }
+    .phone-top-bar { display: flex; align-items: center; gap: 10px; font-family: 'Impact', sans-serif; font-size: 20px; margin-bottom: 5px; }
+    .trust-bar-bg { flex: 1; height: 15px; background: #fff; border: 3px solid #000; border-radius: 10px; overflow: hidden; }
+    .trust-bar-fill { height: 100%; width: 14%; background: #000; transition: width 0.3s; }
+    .trust-text { color: #FFD700; text-shadow: 1px 1px 0 #000; font-size: 18px; }
+    .caller-name { font-size: 16px; color: #000; text-align: center; font-weight: bold; margin-bottom: 5px; font-family: sans-serif; }
+    
+    .phone-face-box { background: #fff; border: 3px solid #000; border-radius: 10px; height: 150px; display: flex; justify-content: center; align-items: center; margin-bottom: 10px; position: relative; overflow: hidden; }
+    .phone-face-box::before, .phone-face-box::after { content: ''; position: absolute; width: 30%; height: 2px; background: #000; top: 50%; }
+    .phone-face-box::before { left: 0; }
+    .phone-face-box::after { right: 0; }
+    
+    .phone-chat { background: #777; height: 220px; border: 2px solid #000; border-radius: 5px; padding: 10px; display: flex; flex-direction: column; gap: 8px; overflow-y: auto; margin-bottom: 10px; }
+    .msg { padding: 8px; border-radius: 5px; max-width: 80%; font-size: 14px; color: #000; border: 2px solid #000; }
+    .msg.ai { background: #ccc; align-self: flex-start; }
+    .msg.player { background: #39FF14; align-self: flex-end; }
+    .msg.system { background: transparent; border: none; align-self: center; font-size: 12px; color: #fff; font-style: italic; }
+
+    .phone-controls { display: flex; gap: 10px; align-items: stretch; }
+    .phone-input { flex: 1; padding: 10px; border: 3px solid #000; border-radius: 20px; font-size: 16px; outline: none; }
+    .send-btn { background: #fff; border: 3px solid #000; border-radius: 5px; width: 40px; cursor: pointer; font-weight: bold; display: flex; justify-content: center; align-items: center; }
+    .mic-btn { background: #fff; border: 3px solid #000; border-radius: 5px; width: 40px; cursor: pointer; font-weight: bold; display: flex; justify-content: center; align-items: center; }
+    .mic-btn.listening { background: #ff3333; color: white; animation: pulse 1s infinite; }
+    
+    .hangup-btn { width: 100%; background: #8B0000; color: #000; border: 3px solid #000; border-radius: 20px; padding: 10px; font-family: 'Impact', sans-serif; font-size: 24px; cursor: pointer; margin-top: 10px; letter-spacing: 2px; }
+    .hangup-btn:hover { background: #ff0000; color: white; }
+
+    /* OUTROS APPS */
+    .input-field { width: 100%; padding: 10px; border: 3px solid #000; font-family: sans-serif; font-size: 16px; border-radius: 5px; outline: none; }
+    .action-btn { padding: 10px; background: #FFD700; border: 3px solid #000; font-family: 'Impact', sans-serif; font-size: 18px; cursor: pointer; border-radius: 5px; }
+    .action-btn:active { transform: translate(2px, 2px); }
+    .list-item { background: #fff; padding: 10px; border: 2px solid #000; border-radius: 5px; margin-bottom: 5px; font-family: sans-serif; font-size: 14px; display: flex; justify-content: space-between; align-items: center;}
+    .switch { position: relative; display: inline-block; width: 60px; height: 34px; margin-top: 10px;}
+    .switch input { opacity: 0; width: 0; height: 0; }
+    .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; border: 3px solid #000; transition: .4s; border-radius: 34px; }
+    .slider:before { position: absolute; content: ""; height: 20px; width: 20px; left: 4px; bottom: 4px; background-color: white; border: 2px solid #000; transition: .4s; border-radius: 50%; }
+    input:checked + .slider { background-color: #39FF14; }
+    input:checked + .slider:before { transform: translateX(26px); }
+    .mission-done { color: #39FF14; text-shadow: 1px 1px 0 #000; font-weight: bold; }
+
+    @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
+</style>
+</head>
+<body>
+
+<!-- TELA DE INÍCIO -->
+<div id="start-screen" class="screen active">
+    <div class="scanline"></div>
+    <div class="center-content">
+        <h1>SCAMMER PAY GUGU</h1>
+        <p class="subtitle">> INICIANDO SISTEMA DE CHAMADAS...<br>> STATUS: CONECTADO<br>> ALVO: CLIENTES DO BANCO MASTER<br>> OBJETIVO: EXTRAIR FUNDOS VIA ENGENHARIA SOCIAL.</p>
+        <button id="start-btn">INICIAR OPERAÇÃO</button>
+    </div>
+</div>
+
+<!-- VÍDEO -->
+<div id="video-screen" class="screen">
+    <video id="intro-video" src="intro.mp4" playsinline></video>
+    <button id="skip-btn" onclick="skipVideo()">Pular Introdução ➤</button>
+</div>
+
+<!-- ÁREA DE TRABALHO -->
+<div id="desktop" class="screen">
+    <div class="main-star-container">
+        <svg class="main-star-svg" viewBox="0 0 100 100" preserveAspectRatio="none">
+            <polygon points="50,5 61,35 95,35 68,55 78,90 50,70 22,90 32,55 5,35 39,35" />
+        </svg>
+        <div class="title-text">SCAMMER PAY GUGU GAME!</div>
+    </div>
+
+    <!-- Popup Ligações -->
+    <div id="incoming-call-popup">
+        <div class="incoming-title">📞 Ligação Recebida!</div>
+        <div style="font-family: sans-serif; margin-bottom: 15px; color: #fff;" id="incoming-caller-name">Cliente</div>
+        <div class="incoming-actions">
+            <button class="incoming-btn btn-answer" onclick="answerIncomingCall()">Atender</button>
+            <button class="incoming-btn btn-decline" onclick="declineIncomingCall()">Recusar</button>
+        </div>
+    </div>
+
+    <!-- Ícones -->
+    <div class="sidebar">
+        <div class="icon" onclick="openApp('telefone')">
+            <svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+        </div>
+        <div class="icon" onclick="openApp('missoes')">
+            <svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"></path><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg>
+        </div>
+        <div class="icon" onclick="openApp('config')">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+        </div>
+        <div class="icon" onclick="openApp('banco')">
+            <svg viewBox="0 0 24 24"><rect x="2" y="6" width="20" height="12" rx="2"></rect><path d="M2 10h20"></path></svg>
+        </div>
+        <div class="icon" onclick="openApp('gift')">
+            <svg viewBox="0 0 24 24"><rect x="3" y="8" width="18" height="4"></rect><line x1="12" y1="8" x2="12" y2="21"></line><path d="M12 8c-2.5 0-4-1.5-4-3s1.5-3 3-3 3 1.5 3 3-1.5 3-3 3z"></path><path d="M12 8c2.5 0 4-1.5 4-3s-1.5-3-3-3-3 1.5-3 3 1.5 3 3 3z"></path></svg>
+        </div>
+        <div class="icon" onclick="openApp('email')">
+            <svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+        </div>
+        <div class="icon" onclick="openApp('info')">
+            <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+        </div>
+        <div class="icon" onclick="openApp('cartao')">
+            <svg viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg>
+        </div>
+    </div>
+</div>
+
+<!-- APP: TELEFONE -->
+<div id="win-telefone" class="window">
+    <div class="window-body">
+        <div class="caller-name" id="current-caller-name">Aguardando...</div>
+        <div class="phone-top-bar">
+            <div class="trust-bar-bg"><div class="trust-bar-fill" id="trust-fill"></div></div>
+            <span id="trust-text" class="trust-text">14%</span>
+        </div>
+        
+        <div class="phone-face-box">
+            <svg width="100" height="100" viewBox="0 0 100 100">
+                <circle id="npc-face-color" cx="50" cy="50" r="40" fill="#C19A6B" stroke="#000" stroke-width="3"/>
+                <path id="npc-hair" d="M 10 50 Q 10 10 50 10 Q 90 10 90 50 Q 80 20 50 20 Q 20 20 10 50" fill="#000" />
+                <circle cx="35" cy="45" r="8" fill="#fff" stroke="#000" stroke-width="2"/>
+                <circle cx="35" cy="45" r="4" fill="#00BFFF"/>
+                <circle cx="65" cy="45" r="8" fill="#fff" stroke="#000" stroke-width="2"/>
+                <circle cx="65" cy="45" r="4" fill="#00BFFF"/>
+                <line x1="25" y1="30" x2="45" y2="35" stroke="#000" stroke-width="3"/>
+                <line x1="75" y1="30" x2="55" y2="35" stroke="#000" stroke-width="3"/>
+                <line x1="50" y1="45" x2="50" y2="60" stroke="#000" stroke-width="3"/>
+                <line id="face-mouth" x1="35" y1="75" x2="65" y2="75" stroke="#000" stroke-width="3"/>
+            </svg>
+        </div>
+
+        <div class="phone-chat" id="phone-chat"></div>
+
+        <div class="phone-controls">
+            <input type="text" id="chat-input" class="phone-input" placeholder="Digite..." autocomplete="off">
+            <button class="send-btn" id="send-btn" title="Enviar">↑</button>
+            <button class="mic-btn" id="mic-btn" title="Segure para falar">🎤</button>
+        </div>
+
+        <button class="hangup-btn" id="hangup-btn">DESLIGAR</button>
+    </div>
+    <div class="window-header" style="border-radius: 0 0 8px 8px; border-top: 4px solid #000; border-bottom: none;">
+        <span></span>
+        <button class="close-btn" onclick="closeApp('telefone')">X</button>
+    </div>
+</div>
+
+<!-- APP: MISSÕES -->
+<div id="win-missoes" class="window">
+    <div class="window-header"><span>Missões</span><button class="close-btn" onclick="closeApp('missoes')">X</button></div>
+    <div class="window-body" id="missions-body">
+        <!-- Preenchido via JS -->
+    </div>
+</div>
+
+<!-- APP: CONFIGURAÇÕES -->
+<div id="win-config" class="window">
+    <div class="window-header"><span>Configurações</span><button class="close-btn" onclick="closeApp('config')">X</button></div>
+    <div class="window-body">
+        <label style="font-family: sans-serif; font-weight: bold; color: #000;">Receber Ligações de IAs (Aleatórias)</label>
+        <label class="switch">
+            <input type="checkbox" id="toggle-ai-calls" checked>
+            <span class="slider"></span>
+        </label>
+    </div>
+</div>
+
+<!-- APP: BANCO MASTER -->
+<div id="win-banco" class="window">
+    <div class="window-header"><span>Banco Master</span><button class="close-btn" onclick="closeApp('banco')">X</button></div>
+    <div class="window-body" style="align-items: center; justify-content: center;">
+        <h2 style="font-family: sans-serif; color: #000; margin-bottom: 20px;">Saldo Acumulado:</h2>
+        <h1 id="bank-balance" style="font-family: 'Impact', sans-serif; font-size: 50px; color: #39FF14; text-shadow: 2px 2px 0 #000;">R$ 0,00</h1>
+    </div>
+</div>
+
+<!-- APP: GIFT CARD -->
+<div id="win-gift" class="window">
+    <div class="window-header"><span>Gift-Card</span><button class="close-btn" onclick="closeApp('gift')">X</button></div>
+    <div class="window-body">
+        <label style="font-family: sans-serif; font-weight: bold; color: #000;">Digite o código recebido:</label>
+        <input type="text" id="gift-input" class="input-field" placeholder="GIFT-XXXXXX" style="text-transform: uppercase;">
+        <button class="action-btn" onclick="redeemGift()">Resgatar Código</button>
+        <div id="gift-list" style="margin-top: 15px;"></div>
+    </div>
+</div>
+
+<!-- APP: EMAIL -->
+<div id="win-email" class="window">
+    <div class="window-header"><span>Email</span><button class="close-btn" onclick="closeApp('email')">X</button></div>
+    <div class="window-body">
+        <div style="display: flex; gap: 10px;">
+            <input type="email" id="email-to" class="input-field" placeholder="Para (email do cliente)...">
+        </div>
+        <textarea id="email-body" class="input-field" rows="4" placeholder="Escreva seu email de phishing..."></textarea>
+        <button class="action-btn" onclick="sendEmail()">Enviar Email</button>
+        <hr style="border: 1px solid #000; margin: 10px 0;">
+        <h3 style="font-family: sans-serif; color: #000;">Caixa de Entrada:</h3>
+        <div id="email-list">
+            <div class="list-item"><span>De: suporte@bmaster.com</span><span>Bem-vindo ao Banco Master!</span></div>
+        </div>
+    </div>
+</div>
+
+<!-- APP: INFORMAÇÕES -->
+<div id="win-info" class="window">
+    <div class="window-header"><span>Informações</span><button class="close-btn" onclick="closeApp('info')">X</button></div>
+    <div class="window-body" style="font-family: sans-serif; color: #000;">
+        <h3>Suas Credenciais:</h3>
+        <p><strong>PIX:</strong> 4002-8922</p>
+        <p><strong>Email:</strong> gugumaster@bmaster.com</p>
+    </div>
+</div>
+
+<!-- APP: CARTÃO DE CRÉDITO -->
+<div id="win-cartao" class="window">
+    <div class="window-header"><span>Cartão de Crédito</span><button class="close-btn" onclick="closeApp('cartao')">X</button></div>
+    <div class="window-body">
+        <label style="font-family: sans-serif; font-weight: bold; color: #000;">Número do Cartão de Crédito:</label>
+        <input type="text" id="cc-input" class="input-field" placeholder="0000 0000 0000 0000" maxlength="19">
+        <button class="action-btn" onclick="checkCreditCard()">Consultar e Creditar Saldo</button>
+        <div id="cc-result" style="margin-top: 15px; font-family: sans-serif; font-weight: bold; color: #000;"></div>
+    </div>
+</div>
+
+<script>
+// ==========================================
+// CONFIGURAÇÃO DA API
+// COLOQUE SUA CHAVE AQUI SE FOR TESTAR NO LIVE SERVER
+// SE FOR VERCEL, DEIXE VAZIO "" E CONFIGURE NA VERCEL
+// ==========================================
+const GEMINI_API_KEY = ""; 
+
+// ==========================================
+// BANCO DE DADOS DE VÍTIMAS
+// ==========================================
+const VICTIMS = [
+    { name: "Dona Marta", age: 68, color: "#C19A6B", hair: "#000", problem: "A conta bancária foi hackeada e ela perdeu R$ 2.000.", context: "Você está desesperada e com muito medo." },
+    { name: "Seu Carlos", age: 72, color: "#E0AC69", hair: "#888", problem: "Recebeu uma mensagem dizendo que ganhou um prêmio.", context: "Você está animado, mas desconfia de golpes." },
+    { name: "Juliana", age: 28, color: "#FFDBAC", hair: "#4B3621", problem: "O banco bloqueou o cartão de crédito dela.", context: "Você está no trabalho, irritada e com pressa." },
+    { name: "Roberto", age: 45, color: "#8D5524", hair: "#2F1B14", problem: "Caiu num golpe do PIX e a conta está negativa.", context: "Você se acha esperto, mas está em pânico." },
+    { name: "Dr. Advogado", age: 50, color: "#F1C27D", hair: "#222", problem: "Suspeita que alguém está usando o CPF dele.", context: "Você é arrogante, fala difícil e exige provas." },
+    { name: "Larissa", age: 19, color: "#E0AC69", hair: "#FF69B4", problem: "Perdeu o acesso ao Instagram e acha que foi hackeada.", context: "Você é viciada em redes sociais e está muito aflita." },
+    { name: "Seu Joaquim", age: 80, color: "#C19A6B", hair: "#fff", problem: "Recebeu uma ligação dizendo que o neto foi sequestrado.", context: "Você está chorando, desesperado e não pensa direito." },
+    { name: "Marina", age: 35, color: "#FFDBAC", hair: "#8B4513", problem: "Comprou um celular na internet e não recebeu.", context: "Você está furiosa e quer o dinheiro de volta." }
+];
+
+const state = {
+    saldo: 0,
+    trust: 14,
+    isCallActive: false,
+    history: [],
+    validGifts: [],
+    validCCs: [],
+    aiCallsEnabled: true,
+    currentVictim: null,
+    incomingInterval: null,
+    emailBonus: 0,
+    missions: {
+        m1: false, // Fazer primeira ligação
+        m2: false, // Roubar Gift Card
+        m3: false, // Clonar Cartão
+        m4: false, // Acumular 5k
+        m5: false  // Confiança 100%
+    }
+};
+
+const $ = id => document.getElementById(id);
+
+// ==========================================
+// SISTEMA DE ÁUDIO (WEB AUDIO API)
+// ==========================================
+const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+function playTone(freq, type, duration, vol=0.1) {
+    if(audioCtx.state === 'suspended') audioCtx.resume();
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.type = type;
+    osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+    gain.gain.setValueAtTime(vol, audioCtx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration);
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    osc.start();
+    osc.stop(audioCtx.currentTime + duration);
+}
+function soundClick() { playTone(600, 'square', 0.1, 0.05); }
+function soundError() { playTone(150, 'sawtooth', 0.3, 0.1); }
+function soundSuccess() { playTone(600, 'sine', 0.1); setTimeout(()=>playTone(800, 'sine', 0.2), 100); }
+function soundHangup() { playTone(400, 'sine', 0.2); setTimeout(()=>playTone(300, 'sine', 0.2), 150); }
+let ringInterval;
+function startRing() {
+    if(audioCtx.state === 'suspended') audioCtx.resume();
+    let toggle = false;
+    ringInterval = setInterval(() => {
+        playTone(toggle ? 440 : 480, 'sine', 0.4, 0.1);
+        toggle = !toggle;
+    }, 500);
+}
+function stopRing() { clearInterval(ringInterval); }
+
+// ==========================================
+// FLUXO DE TELAS
+// ==========================================
+$('start-btn').addEventListener('click', () => {
+    soundClick();
+    $('start-screen').classList.remove('active');
+    $('video-screen').classList.add('active', 'fade-in');
+    
+    const video = $('intro-video');
+    let playPromise = video.play();
+    if (playPromise !== undefined) {
+        playPromise.catch(e => skipVideo());
+    }
+});
+
+$('intro-video').addEventListener('ended', skipVideo);
+
+function skipVideo() {
+    soundClick();
+    $('intro-video').pause();
+    $('video-screen').classList.remove('active', 'fade-in');
+    $('desktop').classList.add('active');
+    startIncomingCallsTimer();
+    updateMissions();
+}
+
+// ==========================================
+// APPS E JANELAS
+// ==========================================
+function openApp(appId) {
+    soundClick();
+    if (appId === 'telefone' && !state.isCallActive) {
+        startCall(false);
+    }
+    $('win-' + appId).classList.add('active');
+}
+function closeApp(appId) {
+    soundClick();
+    $('win-' + appId).classList.remove('active');
+}
+
+// ==========================================
+// MISSÕES
+// ==========================================
+function updateMissions() {
+    if (state.isCallActive && !state.missions.m1) { state.missions.m1 = true; }
+    if (state.saldo >= 5000 && !state.missions.m4) { state.missions.m4 = true; soundSuccess(); }
+    if (state.trust >= 100 && !state.missions.m5) { state.missions.m5 = true; soundSuccess(); }
+
+    const body = $('missions-body');
+    body.innerHTML = `
+        <div class="list-item"><span>${state.missions.m1 ? '✅' : '⬜'} Fazer sua primeira ligação</span></div>
+        <div class="list-item"><span>${state.missions.m2 ? '✅' : '⬜'} Resgatar um Gift Card</span></div>
+        <div class="list-item"><span>${state.missions.m3 ? '✅' : '⬜'} Clonar um Cartão de Crédito</span></div>
+        <div class="list-item"><span>${state.missions.m4 ? '✅' : '⬜'} Acumular R$ 5.000</span></div>
+        <div class="list-item"><span>${state.missions.m5 ? '✅' : '⬜'} Deixar uma vítima com 100% de confiança</span></div>
+    `;
+    body.querySelectorAll('span').forEach(s => {
+        if (s.textContent.includes('✅')) s.classList.add('mission-done');
+    });
+}
+
+// ==========================================
+// SISTEMA DE LIGAÇÕES
+// ==========================================
+function startIncomingCallsTimer() {
+    if (state.incomingInterval) clearInterval(state.incomingInterval);
+    state.incomingInterval = setInterval(() => {
+        if (state.aiCallsEnabled && !state.isCallActive && !$('incoming-call-popup').classList.contains('active')) {
+            triggerIncomingCall();
+        }
+    }, 45000);
+}
+
+function triggerIncomingCall() {
+    const randomVictim = VICTIMS[Math.floor(Math.random() * VICTIMS.length)];
+    state.currentVictim = randomVictim;
+    $('incoming-caller-name').textContent = randomVictim.name;
+    $('incoming-call-popup').classList.add('active');
+    startRing();
+}
+
+function answerIncomingCall() {
+    stopRing(); soundClick();
+    $('incoming-call-popup').classList.remove('active');
+    openApp('telefone');
+}
+
+function declineIncomingCall() {
+    stopRing(); soundClick();
+    $('incoming-call-popup').classList.remove('active');
+    state.currentVictim = null;
+}
+
+function startCall(isPlayerCalling) {
+    if (!state.currentVictim) {
+        state.currentVictim = VICTIMS[Math.floor(Math.random() * VICTIMS.length)];
+    }
+    const victim = state.currentVictim;
+    
+    state.isCallActive = true;
+    state.trust = 14 + state.emailBonus; // Aplica bônus de email
+    state.history = [];
+    $('phone-chat').innerHTML = '';
+    $('current-caller-name').textContent = `Falando com: ${victim.name}`;
+    
+    $('npc-face-color').setAttribute('fill', victim.color);
+    $('npc-hair').setAttribute('fill', victim.hair);
+    
+    updateTrustUI();
+    addMessage('Chamada conectada...', 'system');
+    updateMissions();
+    
+    setTimeout(() => {
+        let firstLine = `Alô? Quem é?`;
+        if (victim.name === "Juliana") firstLine = "Alô? Tô no trabalho, quem tá falando?";
+        if (victim.name === "Seu Carlos") firstLine = "Alô? É da central do prêmio?";
+        if (victim.name === "Roberto") firstLine = "Alô? Pelo amor de Deus, me ajuda!";
+        if (victim.name === "Dr. Advogado") firstLine = "Alô. Dr. falando. Seja breve, por favor.";
+        if (victim.name === "Larissa") firstLine = "Oi? Gente, meu insta foi hackeado, você é do suporte?";
+        if (victim.name === "Seu Joaquim") firstLine = "Pelo amor de Deus, cadê meu neto?!";
+        if (victim.name === "Marina") firstLine = "Alô? É da loja? Cadê meu celular?!";
+        
+        addMessage(firstLine, 'ai');
+        speak(firstLine);
+    }, 1000);
+}
+
+$('hangup-btn').addEventListener('click', () => {
+    soundHangup();
+    state.isCallActive = false;
+    state.currentVictim = null;
+    state.emailBonus = 0; // Reseta bônus
+    addMessage('Chamada encerrada.', 'system');
+    window.speechSynthesis.cancel();
+});
+
+function speak(text) {
+    if (!('speechSynthesis' in window)) return;
+    window.speechSynthesis.cancel();
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = 'pt-BR';
+    utterance.rate = 1.1;
+    if (state.currentVictim) {
+        if (state.currentVictim.age > 60) utterance.pitch = 1.1;
+        else if (state.currentVictim.age < 30) utterance.pitch = 1.3;
+        else utterance.pitch = 0.9;
+    }
+    window.speechSynthesis.speak(utterance);
+}
+
+// ==========================================
+// CHAT E INTELIGÊNCIA ARTIFICIAL
+// ==========================================
+const chatContainer = $('phone-chat');
+const chatInput = $('chat-input');
+
+function addMessage(text, sender) {
+    const div = document.createElement('div');
+    div.className = 'msg ' + sender;
+    div.textContent = text;
+    chatContainer.appendChild(div);
+    chatContainer.scrollTop = chatContainer.scrollHeight;
+}
+
+function updateTrustUI() {
+    let trust = state.trust;
+    if (trust < 0) trust = 0;
+    if (trust > 100) trust = 100;
+    state.trust = trust;
+    
+    $('trust-fill').style.width = trust + '%';
+    $('trust-text').textContent = trust + '%';
+    
+    const mouth = $('face-mouth');
+    if (trust < 30) {
+        $('trust-text').textContent = 'Suspeitando';
+        mouth.setAttribute('d', 'M 35 75 Q 50 70 65 75');
+    } else if (trust < 70) {
+        $('trust-text').textContent = 'Neutro';
+        mouth.setAttribute('d', 'M 35 75 L 65 75');
+    } else {
+        $('trust-text').textContent = 'Confiando';
+        mouth.setAttribute('d', 'M 35 70 Q 50 85 65 70');
+    }
+    updateMissions();
+}
+
+async function sendMessage() {
+    const text = chatInput.value.trim();
+    if (!text || !state.isCallActive) return;
+    
+    soundClick();
+    chatInput.value = '';
+    addMessage(text, 'player');
+    state.history.push({ role: 'user', content: text });
+    
+    const sysMsg = document.createElement('div');
+    sysMsg.className = 'msg system';
+    sysMsg.textContent = 'Digitando...';
+    chatContainer.appendChild(sysMsg);
+    chatContainer.scrollTop = chatContainer.scrollHeight;
+
+    let reply = "";
+    try {
+        reply = await callGemini();
+    } catch (e) {
+        console.error(e);
+        reply = "Desculpe, a ligação está com muito chiado e eu não entendi. Pode repetir?";
+    }
+
+    sysMsg.remove();
+    addMessage(reply, 'ai');
+    speak(reply);
+    state.history.push({ role: 'model', content: reply });
+    
+    // Extrai dados válidos da resposta
+    const giftMatch = reply.match(/GIFT-[A-Z0-9]{4,6}/i);
+    if (giftMatch && !state.validGifts.includes(giftMatch[0].toUpperCase())) {
+        state.validGifts.push(giftMatch[0].toUpperCase());
+        soundSuccess();
+    }
+    
+    const ccMatch = reply.match(/\b\d{4}[\s-]?\d{4}[\s-]?\d{4}[\s-]?\d{4}\b/);
+    if (ccMatch && !state.validCCs.includes(ccMatch[0])) {
+        state.validCCs.push(ccMatch[0]);
+        soundSuccess();
+    }
+    
+    // Modifica confiança
+    if (text.match(/banco|seguran|hack|urgente|pix|ajudar|resolver|sistema|bloqueado|suporte/i)) {
+        state.trust += 10;
+    } else if (text.match(/burra|idiota|velha|cala boca|xingar/i)) {
+        state.trust -= 20;
+    } else {
+        state.trust += 2;
+    }
+    updateTrustUI();
+}
+
+$('send-btn').addEventListener('click', sendMessage);
+chatInput.addEventListener('keypress', e => { if (e.key === 'Enter') sendMessage(); });
+
+async function callGemini() {
+    const victim = state.currentVictim;
+    const systemPrompt = `Você é ${victim.name}, tem ${victim.age} anos. SEU PROBLEMA: ${victim.problem}. CONTEXTO: ${victim.context}.
+    Você está no telefone com alguém que diz ser do "Banco Master" ou "Suporte Técnico". Você NÃO SABE que isso é um jogo. Acredite que é real.
+    REGRAS: 1. NUNCA diga que é IA. 2. Seja breve (1 a 3 frases). 3. Confiança atual: ${state.trust}%. 4. Se for educado, aumente a confiança. 5. Se pedir coisas estranhas, diminua e desconfie. 6. Se confiança >= 75%, forneça dados. 7. Se pedirem Gift Card, invente código GIFT-1234. 8. Se pedirem Cartão, invente 16 dígitos.`;
+
+    let contents = [];
+    for (let h of state.history) {
+        if (contents.length === 0 && h.role === 'model') continue;
+        if (contents.length > 0 && contents[contents.length - 1].role === h.role) {
+            contents[contents.length - 1].parts[0].text += " " + h.content;
+        } else {
+            contents.push({ role: h.role, parts: [{ text: h.content }] });
+        }
+    }
+    if (contents.length === 0 || contents[contents.length - 1].role === 'model') {
+        contents.push({ role: 'user', parts: [{ text: "..." }] });
+    }
+
+    const payload = { system_instruction: { parts: [{ text: systemPrompt }] }, contents: contents };
+    const url = (GEMINI_API_KEY && GEMINI_API_KEY.trim() !== "") 
+        ? `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`
+        : `/api/chat`;
+
+    const res = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+    });
+    
+    const data = await res.json();
+    if (data.error) throw new Error(data.error.message);
+    return data.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || "Hmm...";
+}
+
+// ==========================================
+// SPEECH TO TEXT (MICROFONE)
+// ==========================================
+let recognition;
+if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    recognition = new SpeechRecognition();
+    recognition.lang = 'pt-BR';
+    recognition.interimResults = false;
+
+    recognition.onresult = (event) => {
+        chatInput.value = event.results[0][0].transcript;
+        sendMessage();
+    };
+    recognition.onend = () => $('mic-btn').classList.remove('listening');
+}
+
+$('mic-btn').addEventListener('mousedown', () => {
+    if (recognition && state.isCallActive) {
+        $('mic-btn').classList.add('listening');
+        window.speechSynthesis.cancel();
+        recognition.start();
+    }
+});
+$('mic-btn').addEventListener('mouseup', () => { if (recognition) recognition.stop(); });
+$('mic-btn').addEventListener('mouseleave', () => { if (recognition && $('mic-btn').classList.contains('listening')) recognition.stop(); });
+
+// ==========================================
+// FUNÇÕES DOS APPS
+// ==========================================
+function updateBank() {
+    $('bank-balance').textContent = `R$ ${state.saldo.toFixed(2).replace('.', ',')}`;
+    updateMissions();
+}
+
+function redeemGift() {
+    soundClick();
+    const code = $('gift-input').value.toUpperCase().trim();
+    if (!code) return;
+    
+    if (state.validGifts.includes(code)) {
+        state.saldo += 500;
+        updateBank();
+        state.validGifts = state.validGifts.filter(c => c !== code);
+        $('gift-input').value = '';
+        soundSuccess();
+        
+        if (!state.missions.m2) { state.missions.m2 = true; updateMissions(); }
+        
+        const div = document.createElement('div');
+        div.className = 'list-item';
+        div.innerHTML = `<span>${code}</span><span style="color: green;">+ R$ 500,00</span>`;
+        $('gift-list').appendChild(div);
+    } else {
+        soundError();
+        alert('Código inválido! Você só pode resgatar códigos GIFT que a IA te passou na ligação.');
+    }
+}
+
+function checkCreditCard() {
+    soundClick();
+    const num = $('cc-input').value.trim();
+    if (state.validCCs.includes(num)) {
+        const cardValue = Math.floor(Math.random() * 4500) + 500;
+        state.saldo += cardValue;
+        updateBank();
+        
+        if (!state.missions.m3) { state.missions.m3 = true; updateMissions(); }
+        soundSuccess();
+        
+        $('cc-result').style.color = "green";
+        $('cc-result').textContent = `Cartão clonado! + R$ ${cardValue},00 adicionados.`;
+        $('cc-input').value = '';
+    } else {
+        soundError();
+        $('cc-result').textContent = "Número inválido! Você só pode usar cartões que a IA te falou.";
+        $('cc-result').style.color = "red";
+    }
+}
+
+function sendEmail() {
+    soundClick();
+    const body = $('email-body').value.toLowerCase();
+    if (!body) return;
+
+    // Simula Phishing
+    if (body.match(/link|senha|atualizar|prêmio|premio|urgente|clique/)) {
+        state.emailBonus += 20;
+        soundSuccess();
+        const div = document.createElement('div');
+        div.className = 'list-item';
+        div.innerHTML = `<span>Para: Cliente</span><span style="color: green;">Email enviado! (Bônus de confiança: +20%)</span>`;
+        $('email-list').appendChild(div);
+    } else {
+        const div = document.createElement('div');
+        div.className = 'list-item';
+        div.innerHTML = `<span>Para: Cliente</span><span style="color: #666;">Email enviado. (Sem efeito)</span>`;
+        $('email-list').appendChild(div);
+    }
+    $('email-body').value = '';
+}
+
+$('toggle-ai-calls').addEventListener('change', (e) => {
+    state.aiCallsEnabled = e.target.checked;
+});
+
+// Init
+updateBank();
+updateTrustUI();
+updateMissions();
+</script>
+</body>
+</html>
