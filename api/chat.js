@@ -7,10 +7,12 @@ export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
   const { contents, system_instruction } = req.body;
-  const apiKey = process.env.GEMINI_API_KEY; // Pega a chave das configurações da Vercel
+  
+  // Lê a chave EXCLUSIVAMENTE das variáveis de ambiente da Vercel
+  const apiKey = process.env.GEMINI_API_KEY; 
 
   if (!apiKey) {
-    return res.status(500).json({ error: 'Chave GEMINI_API_KEY não configurada na Vercel.' });
+    return res.status(500).json({ error: 'A chave GEMINI_API_KEY não foi encontrada nas variáveis da Vercel.' });
   }
 
   try {
@@ -22,8 +24,15 @@ export default async function handler(req, res) {
         body: JSON.stringify({ contents, system_instruction }),
       }
     );
+    
     const data = await response.json();
-    res.status(response.status).json(data);
+    
+    // Se o Google retornar erro, repassa para o jogo
+    if (!response.ok) {
+      return res.status(response.status).json(data);
+    }
+    
+    res.status(200).json(data);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
